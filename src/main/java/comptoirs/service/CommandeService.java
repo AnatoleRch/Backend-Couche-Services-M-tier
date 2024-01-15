@@ -113,7 +113,7 @@ public class CommandeService {
         if (produit.isIndisponible()){throw new IllegalStateException("Le produit est indisponible");}
         if (quantite <= 0){throw new ConstraintViolationException("La quantité est négative ou egale à 0", null);}
         
-        produit.setUnitesCommandees( produit.getUnitesCommandees()+1);
+        produit.setUnitesCommandees( produit.getUnitesCommandees()+quantite);
         var ligne = new Ligne(commande,produit,quantite);
         ligneDao.save(ligne);
         return ligne;
@@ -141,7 +141,11 @@ public class CommandeService {
     public Commande enregistreExpedition(int commandeNum) {
         var commande = commandeDao.findById(commandeNum).orElseThrow();
         if (commande.getEnvoyeele() != null){throw new IllegalStateException("La commande a déja été envoyée");}
-        
+        commande.setEnvoyeele(LocalDate.now());
+        for(Ligne ligne : commande.getLignes()){
+            ligne.getProduit().setUnitesEnStock(ligne.getProduit().getUnitesEnStock()-ligne.getQuantite());
+            ligne.getProduit().setUnitesCommandees(ligne.getProduit().getUnitesCommandees()-ligne.getQuantite());
+        }
         
         return commande;
     }
