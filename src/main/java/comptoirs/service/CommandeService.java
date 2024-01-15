@@ -14,7 +14,7 @@ import comptoirs.dao.LigneRepository;
 import comptoirs.dao.ProduitRepository;
 import comptoirs.entity.Commande;
 import comptoirs.entity.Ligne;
-
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.Positive; 
 
 @Service
@@ -109,9 +109,14 @@ public class CommandeService {
         var commande = commandeDao.findById(commandeNum).orElseThrow();
         var produit = produitDao.findById(produitRef).orElseThrow();
         if (commande.getEnvoyeele() != null){throw new IllegalStateException("La commande a déja été envoyée");}
-        if (produit.getUnitesEnStock() >= quantite){throw new IllegalStateException("Il n'y as pas assés de produit");}
-        // TODO : implémenter cette méthode
-        throw new UnsupportedOperationException("Pas encore implémenté");
+        if (produit.getUnitesEnStock() < quantite){throw new IllegalStateException("Il n'y as pas assés de produit");}
+        if (produit.isIndisponible()){throw new IllegalStateException("Le produit est indisponible");}
+        if (quantite <= 0){throw new ConstraintViolationException("La quantité est négative ou egale à 0", null);}
+        
+        produit.setUnitesCommandees( produit.getUnitesCommandees()+1);
+        var ligne = new Ligne(commande,produit,quantite);
+        ligneDao.save(ligne);
+        return ligne;
     }
 
     /**
@@ -134,7 +139,10 @@ public class CommandeService {
      */
     @Transactional
     public Commande enregistreExpedition(int commandeNum) {
-        // TODO : implémenter cette méthode
-        throw new UnsupportedOperationException("Pas encore implémenté");
+        var commande = commandeDao.findById(commandeNum).orElseThrow();
+        if (commande.getEnvoyeele() != null){throw new IllegalStateException("La commande a déja été envoyée");}
+        
+        
+        return commande;
     }
 }
