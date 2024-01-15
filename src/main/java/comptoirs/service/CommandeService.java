@@ -132,7 +132,7 @@ public class CommandeService {
      * décrémente la quantité commandée (Produit.unitesCommandees) de la quantité
      * dans la commande
      *
-     * @param commandeNum la clé de la commande
+     * @param commandeNum la clé de la  commande 
      * @return la commande mise à jour
      * @throws java.util.NoSuchElementException si la commande n'existe pas
      * @throws IllegalStateException            si la commande a déjà été envoyée
@@ -148,5 +148,5 @@ public class CommandeService {
         }
         
         return commande;
-    }
+    } 
 }
