@@ -106,6 +106,10 @@ public class CommandeService {
      */
     @Transactional
     public Ligne ajouterLigne(int commandeNum, int produitRef, @Positive int quantite) {
+        var commande = commandeDao.findById(commandeNum).orElseThrow();
+        var produit = produitDao.findById(produitRef).orElseThrow();
+        if (commande.getEnvoyeele() != null){throw new IllegalStateException("La commande a déja été envoyée");}
+        if (produit.getUnitesEnStock() >= quantite){throw new IllegalStateException("Il n'y as pas assés de produit");}
         // TODO : implémenter cette méthode
         throw new UnsupportedOperationException("Pas encore implémenté");
     }
